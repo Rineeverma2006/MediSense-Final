@@ -53,7 +53,7 @@ def init_db() -> str:
         return "create_all"
 
 
-# ── Demo directory data ───────────────────────────────────────────────
+# ── Demo directory and patient data ────────────────────────────────────
 # Clearly flagged with ``is_demo=True``: these are illustrative directory
 # entries, not verified practitioners, and the UI labels them as sample data.
 DEMO_DOCTORS = [
@@ -149,21 +149,48 @@ DEMO_DOCTORS = [
 
 
 def seed_demo_data() -> dict:
-    """Insert demo directory doctors if the directory is empty.
+    """Insert demo directory doctors and a demo patient when in demo mode.
 
-    Idempotent. Never creates user accounts or patient records.
+    Idempotent. The demo patient uses a public, synthetic account and is only
+    created when ENVIRONMENT=demo. No demo administrator account is created.
     """
     from app.database import SessionLocal
-    from app.database.models import Doctor
+    from app.database.models import Doctor, User, UserSettings
+    from app.core.config import ENVIRONMENT
+    from app.core.security import hash_password
 
     session = SessionLocal()
     try:
         existing = session.query(Doctor).count()
-        if existing:
-            return {"doctors_inserted": 0, "existing_doctors": existing}
-        for entry in DEMO_DOCTORS:
-            session.add(Doctor(**entry, is_active=True, is_demo=True))
-        session.commit()
-        return {"doctors_inserted": len(DEMO_DOCTORS), "existing_doctors": existing}
+        if not existing:
+            for entry in DEMO_DOCTORS:
+                session.add(Doctor(**entry, is_active=True, is_demo=True))
+            session.commit()
+
+        seeded_patient = False
+        if ENVIRONMENT.lower() == "demo":
+            demo_email = "patient@medisense.demo"
+            patient = session.query(User).filter_by(email=demo_email).first()
+            if patient is None:
+                patient = User(
+                    email=demo_email,
+                    name="Shubham Raj",
+                    role="patient",
+                    password_hash=hash_password("MediSense@123"),
+                )
+                session.add(patient)
+                session.commit()
+                session.refresh(patient)
+                if not session.query(UserSettings).filter_by(user_id=patient.id).first():
+                    session.add(UserSettings(user_id=patient.id))
+                    session.commit()
+                seeded_patient = True
+
+        return {
+            "doctors_inserted": 0 if existing else len(DEMO_DOCTORS),
+            "existing_doctors": existing,
+            "demo_patient_created": seeded_patient,
+        }
     finally:
         session.close()
+
