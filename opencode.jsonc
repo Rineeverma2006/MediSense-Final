@@ -1,0 +1,39 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+
+  // Default model for this project.
+  "model": "opencode/deepseek-v4.1-flash-free",
+
+  // Primary agent used when a session does not pick one.
+  "default_agent": "build",
+
+  // Balanced policy: ask before shell commands and access outside the project,
+  // fast-track read-only git commands, and always block destructive ones.
+  // The last matching rule wins.
+  "permissions": [
+    { "action": "shell", "resource": "*", "effect": "ask" },
+
+    // Read-only git inspection is safe to run without prompting.
+    { "action": "shell", "resource": "git status *", "effect": "allow" },
+    { "action": "shell", "resource": "git diff *", "effect": "allow" },
+    { "action": "shell", "resource": "git log *", "effect": "allow" },
+    { "action": "shell", "resource": "git show *", "effect": "allow" },
+    { "action": "shell", "resource": "git branch *", "effect": "allow" },
+    { "action": "shell", "resource": "git ls-files *", "effect": "allow" },
+    { "action": "shell", "resource": "git rev-parse *", "effect": "allow" },
+
+    // Destructive commands are denied outright (git push still asks above).
+    { "action": "shell", "resource": "rm -rf *", "effect": "deny" },
+    { "action": "shell", "resource": "rm -r *", "effect": "deny" },
+    { "action": "shell", "resource": "git push --force *", "effect": "deny" },
+    { "action": "shell", "resource": "git push -f *", "effect": "deny" },
+    { "action": "shell", "resource": "git reset --hard *", "effect": "deny" },
+    { "action": "shell", "resource": "git clean -f*", "effect": "deny" },
+    { "action": "shell", "resource": "mkfs*", "effect": "deny" },
+    { "action": "shell", "resource": "dd *", "effect": "deny" },
+    { "action": "shell", "resource": "shutdown *", "effect": "deny" },
+
+    // Ask before reading or editing anything outside this project.
+    { "action": "external_directory", "resource": "*", "effect": "ask" }
+  ]
+}
