@@ -26,6 +26,10 @@ export default function Login() {
         setError('Password must be at least 8 characters.');
         return;
       }
+      if (!/[A-Za-z]/.test(password) || !/\d/.test(password)) {
+        setError('Password must contain at least one letter and one number.');
+        return;
+      }
       if (password !== confirm) {
         setError('Passwords do not match.');
         return;
@@ -45,6 +49,12 @@ export default function Login() {
 
   const switchMode = (next: Mode) => {
     setMode(next);
+    setError('');
+  };
+
+  const fillDemoCredentials = () => {
+    setEmail('patient@medisense.demo');
+    setPassword('MediSense@123');
     setError('');
   };
 
@@ -172,6 +182,13 @@ export default function Login() {
 
             {error && <ErrorBox message={error} />}
 
+            {mode === 'register' && password.length > 0 &&
+              (!/[A-Za-z]/.test(password) || !/\d/.test(password)) && (
+                <div className="small-note" role="status">
+                  Password must include at least one letter and one number.
+                </div>
+              )}
+
             <button type="submit" className="btn primary full" disabled={busy}>
               {busy ? 'Please wait…' : mode === 'login' ? 'Sign in' : 'Create account'}
               {!busy && <ArrowRight size={15} />}
@@ -196,6 +213,12 @@ export default function Login() {
             )}
           </div>
 
+          {mode === 'login' && (
+            <button type="button" className="text-btn" onClick={fillDemoCredentials} style={{ marginTop: 12 }}>
+              Fill demo account
+            </button>
+          )}
+
           <p className="small-note" style={{ marginTop: 22, lineHeight: 1.7 }}>
             MediSense provides informational analysis only and is not a substitute for professional
             medical advice, diagnosis or treatment. In an emergency, contact local emergency services.
@@ -205,3 +228,4 @@ export default function Login() {
     </div>
   );
 }
+
