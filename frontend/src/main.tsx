@@ -4,8 +4,8 @@ import { BrowserRouter } from 'react-router-dom';
 import App from './App';
 import './index.css';
 
-if (localStorage.getItem('ms_palette') !== 'silver-espresso-v2') {
-  localStorage.setItem('ms_palette', 'silver-espresso-v2');
+if (localStorage.getItem('ms_palette') !== 'crimson-cream-v1') {
+  localStorage.setItem('ms_palette', 'crimson-cream-v1');
   localStorage.setItem('ms_dark', '0');
 } else if (localStorage.getItem('ms_dark') === null) {
   localStorage.setItem('ms_dark', '0');
@@ -18,3 +18,4 @@ createRoot(document.getElementById('root')!).render(
     </BrowserRouter>
   </React.StrictMode>
 );
+

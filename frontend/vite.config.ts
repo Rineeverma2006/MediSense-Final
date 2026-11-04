@@ -14,8 +14,8 @@ export default defineConfig(({ mode }) => {
           name: 'MediSense Healthcare Intelligence',
           short_name: 'MediSense',
           description: 'Personal health records and educational health tools.',
-          theme_color: '#211e1b',
-          background_color: '#f2f2f0',
+          theme_color: '#7A0E14',
+          background_color: '#F5EDE6',
           display: 'standalone',
           start_url: '/',
           icons: [
@@ -39,3 +39,4 @@ export default defineConfig(({ mode }) => {
     },
   };
 });
+

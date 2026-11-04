@@ -57,4 +57,16 @@ This copy has useful, verified improvements over the supplied ZIP, but it does *
 
 Local preview currently runs at `http://localhost:5181/` while the preview servers are active. It is not a public deployment URL. The anatomy viewer is third-party hosted and requires internet access.
 
-The working project is not ready to upload or describe as complete. Git upload has been deferred per the user's instruction.
+This was the pre-publication status before the November 4 Crimson Cream and security pass below.
+
+## Crimson Cream and final security pass (November 4, 2026)
+
+- Replaced the previous Silver Espresso overrides with the supplied Crimson Cream palette in light and dark modes: crimson `#7A0E14`, red `#B3262E`, warm gold `#D9A66B`, cream `#F5EDE6`, and white `#FFFFFF`.
+- Enabled Supabase RLS on all 17 public tables, revoked table and sequence privileges from `anon`, `authenticated`, and `PUBLIC`, and removed default grants for future tables/sequences. This app uses its server-side PostgreSQL connection and custom JWT, so no Data API policies are intentionally added; unauthenticated Data API access is deny-all.
+- Verified all 17 tables have RLS enabled and the exposed roles have no table read/write grants. Supabase security advisor has no security errors; its 17 `rls_enabled_no_policy` INFO notices correspond to the intended deny-all configuration. Three unused-index INFO notices remain and were not removed without workload evidence.
+- Added a production startup guard that refuses the development-default signing key. Configured production CORS for the Android Capacitor origin `https://localhost`; browser requests use the same origin.
+- Verification completed: `npm run build` passed, `backend/.venv/Scripts/python.exe -m pytest -q` passed with 28 tests (198 existing deprecation warnings), `npx cap sync android` passed, and `assembleDebug` succeeded with Java 21. The debug APK is 16,099,843 bytes; SHA-256 is `307F4121DF9A46B3CC8026AE0A11C626EF005FA68386F7C0CC5EF23CC958FC67`. Android metadata confirms package `org.medisense.health`, min SDK 24, target SDK 36.
+- The web and download URL update is being published to GitHub/Vercel. This project remains an educational prototype and is not ready for real patient data or clinical decisions.
+
+The app remains an educational prototype. Live AI credentials, rate limiting/abuse monitoring, identity/session hardening, consent and retention workflows, native health-platform integrations, and real-device QA remain outside the verified scope. Do not use it with real patient information or for clinical decisions.
+

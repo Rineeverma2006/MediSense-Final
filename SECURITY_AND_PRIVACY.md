@@ -20,3 +20,13 @@ MediSense is an educational prototype. Do not upload real patient records or use
 - Review every role and ownership boundary, obtain a privacy/security assessment, and meet applicable law before handling real health data.
 
 No claim of medical-device status, clinical validation, or production readiness is made.
+
+## November 4 security verification
+
+- Supabase Data API roles `anon` and `authenticated` have no table/sequence privileges in `public`; all 17 public tables have RLS enabled with no policies, which is deny-all. The FastAPI server accesses Postgres using its server-side connection and custom JWT, so this application does not rely on Supabase Auth row policies.
+- The Supabase security advisor reports no security errors after the change. The remaining `rls_enabled_no_policy` INFO findings are intentional. Unused-index INFO notices remain untouched pending usage evidence.
+- Production CORS is scoped to the deployed browser origin (same-origin) and Android's Capacitor origin `https://localhost`.
+- Production startup now fails closed if `SECRET_KEY` is still the development default.
+
+Residual controls and review still needed before any real health data: distributed rate limiting and abuse monitoring, identity/session and CSRF review, consent/retention/deletion policy, backup and incident response, privacy/legal review, and testing on physical Android devices. This is an educational prototype, not a clinical system.
+

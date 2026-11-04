@@ -148,6 +148,11 @@ elif SERVE_FRONTEND:
 @app.on_event("startup")
 def _startup_checks() -> None:
     if SECRET_KEY_IS_DEFAULT:
+        if ENVIRONMENT.strip().lower() in {"production", "prod"}:
+            raise RuntimeError(
+                "Refusing to start in production with the development SECRET_KEY. "
+                "Configure a unique, high-entropy SECRET_KEY first."
+            )
         logger.warning(
             "SECRET_KEY is the development default — set a strong value before "
             "handling real patient data."
@@ -165,3 +170,4 @@ def _startup_checks() -> None:
         status = ai_availability()
         if not status["live"]:
             logger.warning("AI provider requested but not configured: %s", status["detail"])
+

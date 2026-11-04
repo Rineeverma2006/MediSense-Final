@@ -74,6 +74,10 @@ export function useTheme(): [boolean, () => void] {
   useEffect(() => {
     document.documentElement.dataset.theme = dark ? 'dark' : 'light';
     localStorage.setItem('ms_dark', dark ? '1' : '0');
+    document.querySelector('meta[name="theme-color"]')?.setAttribute(
+      'content', dark ? '#171112' : '#F5EDE6',
+    );
   }, [dark]);
   return [dark, () => setDark((d) => !d)];
 }
+
