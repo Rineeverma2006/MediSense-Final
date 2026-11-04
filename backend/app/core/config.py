@@ -87,7 +87,7 @@ CORS_ORIGINS: list[str] = [
     origin.strip()
     for origin in os.getenv(
         "CORS_ORIGINS",
-        "http://localhost:5173,http://127.0.0.1:5173,http://localhost:3000",
+        "http://localhost:5173,http://127.0.0.1:5173,http://localhost:3000,https://localhost",
     ).split(",")
     if origin.strip()
 ]
@@ -98,3 +98,4 @@ FRONTEND_DIST: Path = Path(
     os.getenv("FRONTEND_DIST", str(BASE_DIR.parent / "frontend" / "dist"))
 )
 SERVE_FRONTEND: bool = _flag("SERVE_FRONTEND", "true")
+

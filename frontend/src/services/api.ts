@@ -3,6 +3,7 @@
 // are no mock/fallback data generators here on purpose.
 
 import axios from 'axios';
+import { Capacitor } from '@capacitor/core';
 import type {
   ActivityEntry,
   AdminStats,
@@ -46,7 +47,14 @@ import type {
 
 export const TOKEN_KEY = 'ms_token';
 
-const api = axios.create({ baseURL: '/api' });
+// In a Capacitor APK, `/api` points at the WebView's local origin instead of
+// the deployed backend. Keep the web app same-origin and route native builds
+// to the deployed API.
+const apiBaseUrl = Capacitor.isNativePlatform()
+  ? 'https://medisense-live.vercel.app/api'
+  : '/api';
+
+const api = axios.create({ baseURL: apiBaseUrl, timeout: 20_000 });
 
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem(TOKEN_KEY);
@@ -292,3 +300,4 @@ export const metaApi = {
 
 export type { ChatMessage };
 export default api;
+

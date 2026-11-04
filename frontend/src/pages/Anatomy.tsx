@@ -1,50 +1,81 @@
+import { useState } from 'react';
 import { ExternalLink, Info, ScanLine } from 'lucide-react';
 import { Card, Heading, Notice } from '../components/ui';
 
-const ATLAS_URL = 'https://atlas.taim.best/';
+const MALE_ATLAS_URL = 'https://atlas.taim.best/';
+const FEMALE_ATLAS_URL = 'https://zer01dollars.github.io/female-body-atlas/';
 
 export default function AnatomyPage() {
+  const [reference, setReference] = useState<'male' | 'female'>('male');
+  const atlasUrl = reference === 'male' ? MALE_ATLAS_URL : FEMALE_ATLAS_URL;
+
   return (
     <>
       <Heading
         eyebrow="INTERACTIVE ANATOMY ATLAS"
         title="Explore human anatomy"
-        desc="Inspect realistic adult male and female reference models, switch between skeleton and body systems, and select structures to explore them."
+        desc="Explore separate adult male and female reference models, rotate the body, and inspect anatomy layers for education."
         action={
-          <a className="btn secondary" href={ATLAS_URL} target="_blank" rel="noreferrer">
+          <a className="btn secondary" href={atlasUrl} target="_blank" rel="noreferrer">
             Open atlas <ExternalLink size={14} />
           </a>
         }
       />
       <Notice>
-        <Info size={15} /> This educational reference atlas is not a medical scan, diagnosis, or
-        patient-specific model. It is hosted by Human Atlas and needs an internet connection.
+        <Info size={15} /> These educational reference models are hosted online. They are not medical
+        scans, diagnostic tools, or patient-specific models.
       </Notice>
       <Card className="anatomy-atlas-card">
+        <div className="anatomy-model-switcher" role="tablist" aria-label="Choose anatomy reference model">
+          <button
+            type="button"
+            role="tab"
+            aria-selected={reference === 'male'}
+            className={`btn ${reference === 'male' ? 'primary' : 'secondary'}`}
+            onClick={() => setReference('male')}
+          >
+            Male reference
+          </button>
+          <button
+            type="button"
+            role="tab"
+            aria-selected={reference === 'female'}
+            className={`btn ${reference === 'female' ? 'primary' : 'secondary'}`}
+            onClick={() => setReference('female')}
+          >
+            Female reference
+          </button>
+        </div>
         <div className="anatomy-atlas-heading">
           <div className="anatomy-atlas-icon"><ScanLine size={18} /></div>
           <div>
-            <b>Human Atlas</b>
-            <small>Adult male and female reference bodies · Interactive skeleton and anatomy layers</small>
+            <b>{reference === 'male' ? 'Human Atlas · male reference' : 'Femora Atlas · female reference'}</b>
+            <small>{reference === 'male'
+              ? 'BodyParts3D adult male model · interactive skeleton and anatomy layers'
+              : 'HuBMAP female reference model · female-specific body and reproductive structures'}</small>
           </div>
-          <a href={ATLAS_URL} target="_blank" rel="noreferrer" className="text-btn">
+          <a href={atlasUrl} target="_blank" rel="noreferrer" className="text-btn">
             Open separately <ExternalLink size={13} />
           </a>
         </div>
         <iframe
+          key={reference}
           className="anatomy-atlas-frame"
-          src={ATLAS_URL}
-          title="Human Atlas interactive adult male and female anatomy viewer"
+          src={atlasUrl}
+          title={`Interactive ${reference} anatomy reference viewer`}
           loading="eager"
           allow="fullscreen"
           referrerPolicy="strict-origin-when-cross-origin"
         />
         <p className="anatomy-attribution">
-          Anatomy data and viewer by <a href="https://github.com/slorksmo/Human-Atlas" target="_blank" rel="noreferrer">Human Atlas</a>.
-          Its male BodyParts3D and female Human Reference Atlas source models are attributed under CC BY 4.0.
-          Coverage differs between models; some female skeleton groups are adapted from the male reference and are labelled in the atlas. For learning only.
+          {reference === 'male' ? (
+            <>Male reference viewer: <a href="https://github.com/slorksmo/Human-Atlas" target="_blank" rel="noreferrer">Human Atlas</a> using BodyParts3D data.</>
+          ) : (
+            <>Female reference viewer: <a href="https://github.com/zer01dollars/female-body-atlas" target="_blank" rel="noreferrer">Femora Atlas</a>, using HuBMAP female reference anatomy under CC BY 4.0.</>
+          )}{' '}Models have different coverage and are for education only, not diagnosis or treatment.
         </p>
       </Card>
     </>
   );
 }
+
